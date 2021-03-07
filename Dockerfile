@@ -4,12 +4,10 @@ RUN apk add --no-cache git
 WORKDIR /go/src/app
 COPY . .
 RUN go get -d -v ./...
-RUN go install -v ./...
+RUN CGO_ENABLED=0 go install -v ./...
 
-#final stage
-FROM alpine:latest
-RUN apk --no-cache add ca-certificates
+# #final stage
+FROM scratch
 COPY --from=builder /go/bin/apiseanjonesapp /apiseanjonesapp
-ENTRYPOINT ./apiseanjonesapp
-LABEL Name=apiseanjonesapp Version=0.0.1
+CMD [ "/apiseanjonesapp" ]
 EXPOSE 8080
